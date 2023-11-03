@@ -12,8 +12,8 @@ library(org.Hs.eg.db)
 library(forcats) 
 
 
-entity <- read.csv("entity.tsv", header = FALSE, sep = "\t")
-#筛选出第五列是Gene对应的第六列
+entity <- read.csv("./work_data/entity.tsv", header = FALSE, sep = "\t")
+#筛选出第五列是Gene对应的第六列,即对应的entrezID
 gene_id <- entity[entity[,5] == "Gene",6]
 #若元素中包含；则分割
 gene_id <- str_split(gene_id, ";")
@@ -30,11 +30,19 @@ GO <- enrichGO(gene_num,
               pvalueCutoff = 0.05,
               qvalueCutoff = 0.05,
               readable = TRUE)
+write.csv(GO, file = "./EnrichAnalyse/result/all_gene_GO.csv", row.names = FALSE)
 
 KEGG<-enrichKEGG(gene_num,#KEGG富集分析
                  organism = KEGG_database,
                  pvalueCutoff = 0.05,
                  qvalueCutoff = 0.05)
+write.csv(KEGG, file = "./EnrichAnalyse/result/all_gene_KEGG.csv", row.names = FALSE)
+
+covid_19_gene <- KEGG[KEGG[,1] == "hsa05171","geneID"]
+covid_19_gene <- str_split(covid_19_gene, "/")
+covid_19_gene <- unlist(covid_19_gene)
+
+browseKEGG(KEGG, "hsa05171")
 
 pdf("all_gene_GO_dotplot.pdf", width = 10, height = 10)
 dotp <- ggplot(GO,  
@@ -68,6 +76,7 @@ dev.off()
 
 #entity 根据第五列为DNAMutation筛出对应的第一列，记得去重，再在第一列中符合对应的行中筛出第五列为Gene的
 mutation_pmid_id <- unique(entity[entity[,5] == "DNAMutation",1])
+entity_pmid <- entity[entity[,1] %in% mutation_pmid_id,]
 mutation_gene_id <- entity[entity[,1] %in% mutation_pmid_id & entity[,5] == "Gene",6]
 mutation_gene_id <- str_split(mutation_gene_id, ";")
 mutation_gene_id <- unlist(mutation_gene_id)
@@ -89,8 +98,9 @@ dev.off()
 
 KEGG <- enrichKEGG(mutation_gene_num,#KEGG富集分析
                  organism = KEGG_database,
-                 pvalueCutoff = 0.05,
-                 qvalueCutoff = 0.05)
+                 pvalueCutoff = 1,
+                 qvalueCutoff = 1)
+write.csv(KEGG, file = "./EnrichAnalyse/result/mutation_gene_KEGG.csv", row.names = FALSE)
 
 pdf("mutation_gene_dotplot.pdf", width = 10, height = 10)
 dotp <- ggplot(GO,
@@ -104,3 +114,6 @@ dotp <- ggplot(GO,
 print(dotp)
 dev.off()
 
+mutation_gene_id <- mutation_gene_id[mutation_gene_id != ""]
+
+intersection <- intersect(mutation_gene_id, covid_19_gene)

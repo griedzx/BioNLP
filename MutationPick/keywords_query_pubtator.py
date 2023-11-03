@@ -16,8 +16,8 @@
 #20301443        209     215     cancer  Disease MESH:D009369
 ###########################################################
 
-InputFileName= "/home/yh/dzx/work/BioNLP/work_data/abstract_pubtator.txt"  
-OutputFileName= "/home/yh/dzx/work/BioNLP/MutationPick/key_query.txt"
+InputFileName= "../work_data/abstract_pubtator.txt"  
+OutputFileName= "../MutationPick/key_query.txt"
 
 File_source_pubtator = open(InputFileName,'r',encoding='utf-8')
 File_report = open(OutputFileName,'w',encoding='utf-8')

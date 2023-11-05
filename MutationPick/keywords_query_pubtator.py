@@ -2,6 +2,7 @@
 # HZAU BioNLP Lab
 # 2022-04
 # 代码目的：读取PubTator结果文件，根据关键词生成命中句及其标注。代码仅提供基础功能，欢迎试用，改写。
+#对此进行改写，是可以命中多个关键词
 
 ###########################################################
 # $cat data/pubtator_blca.txt| head -7
@@ -16,8 +17,8 @@
 #20301443        209     215     cancer  Disease MESH:D009369
 ###########################################################
 
-InputFileName= "../work_data/abstract_pubtator.txt"  
-OutputFileName= "../MutationPick/key_query.txt"
+InputFileName= "./work_data/abstract_pubtator.txt"  
+OutputFileName= "./MutationPick/key_query.txt"
 
 File_source_pubtator = open(InputFileName,'r',encoding='utf-8')
 File_report = open(OutputFileName,'w',encoding='utf-8')
@@ -101,3 +102,5 @@ print ("We are returning all filtered sentences which included the key words, \"
 and all the PubTator annotations are given as well. \n \
 Please wait...\n".format(querywords))
 filter_sent(querywords)
+
+#目标筛选词语 mutation knockout frameshift deletion insertion frameshift overexpression SNP translocation deficiency transfection
